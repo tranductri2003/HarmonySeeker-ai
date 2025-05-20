@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 from numpy.core.records import array
-from ACR_Training.Annotations import ChordSequence, KeySequence, SongDescription
-from ACR_Training.annotation_maps import chords_map, keys_map, key_modes_map
-from ACR_Training.Audio import Audio, BillboardFeatures
+from SongChordRecognizer_Training.Annotations import (
+    ChordSequence,
+    KeySequence,
+    SongDescription,
+)
+from SongChordRecognizer_Training.annotation_maps import (
+    chords_map,
+    keys_map,
+    key_modes_map,
+)
+from SongChordRecognizer_Training.Audio import Audio, BillboardFeatures
 import os
 from glob import glob
 import pickle
@@ -10,8 +18,8 @@ import lzma
 import librosa
 import numpy as np
 import re
-from ACR_Training.Spectrograms import log_mel_spectrogram
-from ACR_Training.SegmentationModels import SegmentationCRNN
+from SongChordRecognizer_Training.Spectrograms import log_mel_spectrogram
+from SongChordRecognizer_Training.SegmentationModels import SegmentationCRNN
 
 
 class Dataset:

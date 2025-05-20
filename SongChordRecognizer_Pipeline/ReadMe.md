@@ -1,15 +1,11 @@
-# Song Chords Recognizer - ACR Pipeline
+# Song Chords Recognizer - Pipeline
 
-Song Chords Recognizer based on Deep Learning and statistical models coded and [trained](../ACR_Training/ReadMe.md) in Python.
+Song Chords Recognizer based on Deep Learning and statistical models coded and [trained](../SongChordRecognizer_Training/ReadMe.md) in Python.
 
 ### Prerequisites
  - Python 3.8
  - python libraries - sklearn, tensorflow, librosa, mir_eval
- - [ACR_Training folder](../ACR_Training/ReadMe.md)
-
-
-
-
+ - [SongChordRecognizer_Training folder](../SongChordRecognizer_Training/ReadMe.md)
 
 ## Usage
 You can check the [Jupiter Notebook Demo](./Bachelor%20Research%20-%20Demo.ipynb).
@@ -51,44 +47,6 @@ python SongChordsRecognizer.py
             "BarQuarters": 4
         }
         ```
-
-
-### .NET
-```csharp
-// Prepare Audio Wav Input
-AudioSourceWav wav = new AudioSourceWav(audioBytes, audio.FileName);
-string json_request = createJsonRequestBody(wav.GetMonoWaveform(), wav.SampleRate)
-
-// Initialize Process
-ProcessStartInfo python_SongChordRecognizer = new ProcessStartInfo();
-python_SongChordRecognizer.FileName = python_path;
-
-// Prepare command with arguments
-python_SongChordRecognizer.Arguments = script_path;
-
-// Python process configuration
-python_SongChordRecognizer.UseShellExecute = false;
-python_SongChordRecognizer.CreateNoWindow = true;
-python_SongChordRecognizer.RedirectStandardInput = true;
-python_SongChordRecognizer.RedirectStandardOutput = true;
-python_SongChordRecognizer.RedirectStandardError = true;
-
-// Execute process
-string json_response = "";
-string errors = "";
-using (Process process = Process.Start(python_SongChordRecognizer))
-{
-    StreamWriter streamWriter = process.StandardInput;
-    // Send Json request
-    streamWriter.WriteLine(json_request);
-    streamWriter.Close();
-    // Get Json response
-    json_response = process.StandardOutput.ReadToEnd();
-    errors = process.StandardError.ReadToEnd();
-}
-```
-
-
 
 ## Structure
 

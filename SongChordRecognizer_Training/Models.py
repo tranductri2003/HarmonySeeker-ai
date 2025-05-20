@@ -9,8 +9,8 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 import sklearn.pipeline
 import sklearn.preprocessing
-from ACR_Training.SegmentationModels import SegmentationCRNN
-from ACR_Training.efficient_net import EfficientNetB0
+from SongChordRecognizer_Training.SegmentationModels import SegmentationCRNN
+from SongChordRecognizer_Training.efficient_net import EfficientNetB0
 import lzma
 import os
 import pickle

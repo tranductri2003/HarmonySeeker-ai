@@ -1,8 +1,13 @@
 from typing import Sequence
 import numpy as np
-from ACR_Training.Spectrograms import log_mel_spectrogram
-from ACR_Training.Datasets import IsophonicsDataset
-from ACR_Training.annotation_maps import keys_map, chords_map, N_CHORDS, N_KEYS
+from SongChordRecognizer_Training.Spectrograms import log_mel_spectrogram
+from SongChordRecognizer_Training.Datasets import IsophonicsDataset
+from SongChordRecognizer_Training.annotation_maps import (
+    keys_map,
+    chords_map,
+    N_CHORDS,
+    N_KEYS,
+)
 
 
 class DataPreprocessor:

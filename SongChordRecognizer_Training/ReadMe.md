@@ -1,4 +1,4 @@
-# ACR Training
+# SongChordRecognizer Training
 
 Automatic Chord Recognition research folder that generates, parses and stores **Datasets** and defines and trains **Models**. This part of the project is coded in Python in order to use specific python libraries.
 
@@ -11,13 +11,13 @@ Automatic Chord Recognition research folder that generates, parses and stores **
 
 
 
-## ACR - Results
+## Results
+The Proof of concept of SongChordRecognizer training on the Isophonics and Billboard dataset were performed in a Jupyter Notebook. All trainings were evaluated on the validation, NOT TEST, dataset. You can see the outcome [HERE!](./Bachelor%20Research%20-%20ACR.ipynb)
 
-The Proof of concept of ACR training on the Isophonics and Billboard dataset were performed in a Jupyter Notebook. All trainings were evaluated on the validation, NOT TEST, dataset. You can see the outcome [HERE!](./Bachelor%20Research%20-%20ACR.ipynb)
+The actual research inspired of the POC was evaluated only on the Beatles Dataset. Mir eval scores and Accuracy are used and printed [HERE!](./Beatles%20Results.ipynb)
 
-The actual ACR research inspired of the POC was evaluated only on the Beatles Dataset. Mir eval scores and Accuracy are used and printed [HERE!](./Beatles%20Results.ipynb) 
-
-Model descriptions are listed [BELOW.](#acr-models---structures)
+## Models - structures
+Model descriptions are listed [BELOW.](#models---structures)
 
 
 

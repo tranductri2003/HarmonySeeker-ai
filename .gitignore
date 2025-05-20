@@ -34,12 +34,12 @@ bld/
 [Ll]ogs/
 
 # Model Datasets
-ACR_Training/Datasets
-ACR_Training/PreprocessedDatasets
-ACR_Training/SavedDatasets
+SongChordRecognizer_Training/Datasets
+SongChordRecognizer_Training/PreprocessedDatasets
+SongChordRecognizer_Training/SavedDatasets
 Research.MD
 ToDo.txt
-ACR_Training/Segmentations
+SongChordRecognizer_Training/Segmentations
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
