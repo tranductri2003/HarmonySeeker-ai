@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from SongChordRecognizer_Pipeline.DataPreprocessor import DataPreprocessor
 from SongChordRecognizer_Training.Models import CRNN_basic_WithStandardScaler
 from SongChordRecognizer_Training.Spectrograms import cqt_spectrogram
+from SongChordRecognizer_Pipeline.KeyRecognizer import KeyRecognizer
 
 # Load environment variables
 load_dotenv()
@@ -38,7 +39,7 @@ app.add_middleware(
 @app.post("/predict-chord")
 async def predict_chord(file: UploadFile = File(...)):
     """
-    Predict the main chord and full chord sequence from an uploaded audio file.
+    Predict the main chord, full chord sequence, and key from an uploaded audio file.
     """
     tmp_path = None
     try:
@@ -64,15 +65,24 @@ async def predict_chord(file: UploadFile = File(...)):
             norm_to_C=False,
         )
 
-        # Predict chords and get the most frequent one
+        # Predict chords
         predictions = model.predict(x)
         chord_indices = predictions.argmax(axis=2).flatten()
+        # Main chord (most frequent)
         main_chord_index = np.bincount(chord_indices).argmax()
         main_chord = DataPreprocessor.chord_indices_to_notations([main_chord_index])[0]
         chord_sequence = DataPreprocessor.chord_indices_to_notations(chord_indices)
+        # Key detection (music key, not just most frequent chord)
+        chords, counts = np.unique(chord_indices, return_counts=True)
+        chord_counts = dict(zip(chords, counts))
+        key = KeyRecognizer.estimate_key(chord_counts)
 
         return JSONResponse(
-            content={"main_chord": main_chord, "chord_sequence": chord_sequence}
+            content={
+                "main_chord": main_chord,
+                "chord_sequence": chord_sequence,
+                "key": key,
+            }
         )
 
     except Exception as e:

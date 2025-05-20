@@ -5,7 +5,11 @@ def test_predict_chord():
     # Fake test: simulate successful chord prediction
     response = {
         "status_code": 200,
-        "json": lambda: {"main_chord": "C", "chord_sequence": ["C", "G", "Am", "F"]},
+        "json": lambda: {
+            "main_chord": "C",
+            "chord_sequence": ["C", "G", "Am", "F"],
+            "key": "C",
+        },
     }
 
     assert response["status_code"] == 200
@@ -13,6 +17,8 @@ def test_predict_chord():
     assert "main_chord" in data
     assert "chord_sequence" in data
     assert isinstance(data["chord_sequence"], list)
+    assert "key" in data
+    assert isinstance(data["key"], str)
 
 
 def test_voice_removal():
