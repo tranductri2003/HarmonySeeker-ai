@@ -1,12 +1,12 @@
-from ACR_Training.Datasets import IsophonicsDataset
-from ACR_Training.Models import MLP_scalered
+from SongChordRecognizer_Training.Datasets import IsophonicsDataset
+from SongChordRecognizer_Training.Models import MLP_scalered
 import sklearn
 import time
 import joblib
 
 # Load preprocessed dataset
 x, y = IsophonicsDataset.load_preprocessed_dataset(
-    r"/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/ACR_Training/PreprocessedDatasets/isophonics_mlp_ws5_hop1024_sc22_logmel_flatT_noNormC.ds"
+    r"/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/SongChordRecognizer_Training/PreprocessedDatasets/isophonics_mlp_ws5_hop1024_sc22_logmel_flatT_noNormC.ds"
 )
 print("✅ Loaded data:")
 print("  Shape of x:", x.shape)
@@ -43,7 +43,7 @@ print("\n💾 Saving model...")
 try:
     joblib.dump(
         mlp_model.model,
-        r"/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/ACR_Pipeline/my_models/mlp22_isophonics_206songs_noNormC.model",
+        r"/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/SongChordRecognizer_Pipeline/my_models/mlp22_isophonics_206songs_noNormC.model",
     )
     print("✅ Model and scaler saved successfully!")
 except Exception as e:

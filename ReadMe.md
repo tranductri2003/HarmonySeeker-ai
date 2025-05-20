@@ -11,16 +11,15 @@ that you would like to **play on guitar and sing** with your friends?
 
 
 
-## ASP.NET Application
+## Application Overview
 
-Song Chords Recognizer is a [Web Application coded in C#](./WebSongChordsRecognizer/ReadMe.md), where you have two models you can pick to process the audio that will return the chord sequence of the song.
+Song Chords Recognizer is a Python-based application for automatic chord recognition from audio. It provides two main models to process audio and return the chord sequence of the song:
 
- 1. [Predictors](./ACR_Pipeline/ReadMe.md) based on Deep Learning coded in Python.
- 2. [Template Voter](./WebSongChordsRecognizer/SongChordsRecognizer/ReadMe.md) based on the simple chord template voting coded in .NET .
+ 1. MLP (Multi-Layer Perceptron) - A simple but effective neural network model for chord recognition
+ 2. CRNN (Convolutional Recurrent Neural Network) - A more advanced model combining CNN and RNN layers for better accuracy
 
 
+## Research
 
-## ACR Research
-
-Part of the project is also the [Automatic Chord Recognition task RESEARCH](./ACR_Training/ReadMe.md).
+Part of the project is also the [Automatic Chord Recognition task RESEARCH](./SongChordRecognizer_Training/ReadMe.md).
 The approach is to use CRNN models with transpose preprocessing and also vote the most frequent chord for each beat duration.

@@ -6,8 +6,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
-from ACR_Training.Datasets import BillboardDataset, IsophonicsDataset
-from ACR_Training.Spectrograms import (
+from SongChordRecognizer_Training.Datasets import BillboardDataset, IsophonicsDataset
+from SongChordRecognizer_Training.Spectrograms import (
     cqt_spectrogram,
     log_mel_spectrogram,
     cqt_chromagram,
@@ -34,8 +34,8 @@ def save_preprocessed_Isophonics(args):
         args.isophonics_annotations_directory,
         sample_rate=args.sample_rate,
     )
-    # data = IsophonicsDataset.load_dataset("./ACR_Training/SavedDatasets/Isophonics_22050.ds")
-    # data.save_segmentation_samples(dest="./ACR_Training/Segmentations/Isophonics50.seg",hop_length=args.hop_length, norm_to_C=args.norm_to_C, spectrogram_generator=spectrogram, n_frames=args.n_frames)
+    # data = IsophonicsDataset.load_dataset("./SongChordRecognizer_Training/SavedDatasets/Isophonics_22050.ds")
+    # data.save_segmentation_samples(dest="./SongChordRecognizer_Training/Segmentations/Isophonics50.seg",hop_length=args.hop_length, norm_to_C=args.norm_to_C, spectrogram_generator=spectrogram, n_frames=args.n_frames)
     # data.save_preprocessed_dataset(dest=args.isophonics_prep_dest, hop_length=args.hop_length, norm_to_C=args.norm_to_C, spectrogram_generator=spectrogram, n_frames=args.n_frames)
     with lzma.open(args.isophonics_prep_dest, "wb") as dataset_file:
         pickle.dump(
@@ -88,44 +88,44 @@ def save_preprocessed_Billboard(args):
             dataset_file,
         )
     # data.save_preprocessed_dataset(dest=args.billboard_prep_dest, hop_length=args.hop_length, norm_to_C=args.norm_to_C, spectrogram_generator=spectrogram, n_frames=args.n_frames)
-    # data.save_segmentation_samples(dest="./ACR_Training/Segmentations/Billboard1000.seg", n_frames=500)
+    # data.save_segmentation_samples(dest="./SongChordRecognizer_Training/Segmentations/Billboard1000.seg", n_frames=500)
 
 
 parser = argparse.ArgumentParser()
 # Directories, destinations, folders, files
 parser.add_argument(
     "--isophonics_audio_directory",
-    default="./ACR_Training2/Datasets/Isophonics/AUDIO",
+    default="./SongChordRecognizer_Training2/Datasets/Isophonics/AUDIO",
     type=str,
     help="Path to ISOPHONICS directory with audio files.",
 )
 parser.add_argument(
     "--isophonics_annotations_directory",
-    default="./ACR_Training2/Datasets/Isophonics/ANNOTATIONS",
+    default="./SongChordRecognizer_Training2/Datasets/Isophonics/ANNOTATIONS",
     type=str,
     help="Path to ISOPHONICS directory with chord annotations.",
 )
 parser.add_argument(
     "--billboard_audio_directory",
-    default="./ACR_Training/Datasets/Billboard_testset/AUDIO",
+    default="./SongChordRecognizer_Training/Datasets/Billboard_testset/AUDIO",
     type=str,
     help="Path to BILLBOARD directory with audio files.",
 )
 parser.add_argument(
     "--billboard_annotations_directory",
-    default="./ACR_Training/Datasets/Billboard_testset/ANNOTATIONS",
+    default="./SongChordRecognizer_Training/Datasets/Billboard_testset/ANNOTATIONS",
     type=str,
     help="Path to BILLBOARD directory with chord annotations.",
 )
 parser.add_argument(
     "--isophonics_prep_dest",
-    default="./ACR_Training/PreprocessedDatasets/isophonics_new.ds",
+    default="./SongChordRecognizer_Training/PreprocessedDatasets/isophonics_new.ds",
     type=str,
     help="Preprocessed ISOPHONICS dataset destination.",
 )
 parser.add_argument(
     "--billboard_prep_dest",
-    default="./ACR_Training/PreprocessedDatasets/billboard_new.ds",
+    default="./SongChordRecognizer_Training/PreprocessedDatasets/billboard_new.ds",
     type=str,
     help="Preprocessed BILLBOARD dataset destination.",
 )

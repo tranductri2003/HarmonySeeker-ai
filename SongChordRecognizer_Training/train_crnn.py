@@ -1,5 +1,5 @@
-from ACR_Training.Datasets import IsophonicsDataset
-from ACR_Training.Models import CRNN
+from SongChordRecognizer_Training.Datasets import IsophonicsDataset
+from SongChordRecognizer_Training.Models import CRNN
 import sklearn
 import time
 import numpy as np
@@ -7,7 +7,7 @@ import joblib
 
 # Load preprocessed dataset
 x, y = IsophonicsDataset.load_preprocessed_dataset(
-    "/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/ACR_Training/PreprocessedDatasets/isophonics_crnn_ws500_hop1024_sc10.ds"
+    "/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/SongChordRecognizer_Training/PreprocessedDatasets/isophonics_crnn_ws500_hop1024_sc10.ds"
 )
 print("✅ Loaded data:")
 print("  Shape of x:", x.shape)
@@ -55,7 +55,7 @@ print(f"\n🧮 Total trainable parameters: {total_params}")
 print("\n💾 Saving model...")
 try:
     model.model.save(
-        r"/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/ACR_Pipeline/my_models/crnn10_isophonics_206songs.model"
+        r"/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/SongChordRecognizer_Pipeline/my_models/crnn10_isophonics_206songs.model"
     )
     print("✅ Model saved successfully!")
 except Exception as e:

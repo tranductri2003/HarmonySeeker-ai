@@ -8,7 +8,7 @@ from glob import glob
 import mir_eval
 import librosa
 import numpy as np
-from ACR_Pipeline.DataPreprocessor import DataPreprocessor
+from SongChordRecognizer_Pipeline.DataPreprocessor import DataPreprocessor
 
 
 class Evaluator:

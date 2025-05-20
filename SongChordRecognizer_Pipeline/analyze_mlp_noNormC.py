@@ -18,20 +18,14 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
-# Check if ACR_Training module exists
-try:
-    import ACR_Training
+# Check if SongChordRecognizer_Training module exists
+import SongChordRecognizer_Training
 
-    print("ACR_Training module found!")
-except ImportError as e:
-    print(f"Error importing ACR_Training: {e}")
-    sys.exit(1)
-
-# Import required modules
-from ACR_Training.Models import MLP_scalered
-from ACR_Training.Spectrograms import log_mel_spectrogram
-from ACR_Pipeline.KeyRecognizer import KeyRecognizer
-from ACR_Pipeline.DataPreprocessor import DataPreprocessor
+print("SongChordRecognizer_Training module found!")
+from SongChordRecognizer_Training.Models import MLP_scalered
+from SongChordRecognizer_Training.Spectrograms import log_mel_spectrogram
+from SongChordRecognizer_Pipeline.KeyRecognizer import KeyRecognizer
+from SongChordRecognizer_Pipeline.DataPreprocessor import DataPreprocessor
 
 
 def analyze_song(audio_path):
@@ -43,7 +37,7 @@ def analyze_song(audio_path):
 
         print("Step 2: Loading MLP model")
         model = joblib.load(
-            r"/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/ACR_Pipeline/models/obsolete/original_mlp.model"
+            r"/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/SongChordRecognizer_Pipeline/models/obsolete/original_mlp.model"
         )
 
         print("Step 3: Preprocessing audio")
@@ -86,7 +80,7 @@ def analyze_song(audio_path):
 
 
 if __name__ == "__main__":
-    audio_path = "/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/ACR_Pipeline/demo_song/muahong-lequyen.wav"
+    audio_path = "/Users/triductran/SpartanDev/my-work/key-finding/SongChordsRecognizer/SongChordRecognizer_Pipeline/demo_song/muahong-lequyen.wav"
 
     if not os.path.exists(audio_path):
         print(f"Error: File {audio_path} not found")

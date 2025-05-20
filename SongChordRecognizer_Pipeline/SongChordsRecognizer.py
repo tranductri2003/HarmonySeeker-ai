@@ -7,11 +7,18 @@ import json
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 sys.path.append(os.path.join(os.path.dirname(__file__), "..\\"))
-from ACR_Training.Models import MLP_scalered, CRNN, CRNN_basic_WithStandardScaler
-from ACR_Training.Spectrograms import log_mel_spectrogram, cqt_spectrogram
-from ACR_Pipeline.KeyRecognizer import KeyRecognizer
-from ACR_Pipeline.DataPreprocessor import DataPreprocessor
-from ACR_Pipeline.ChordVoter import ChordVoter
+from SongChordRecognizer_Training.Models import (
+    MLP_scalered,
+    CRNN,
+    CRNN_basic_WithStandardScaler,
+)
+from SongChordRecognizer_Training.Spectrograms import (
+    log_mel_spectrogram,
+    cqt_spectrogram,
+)
+from SongChordRecognizer_Pipeline.KeyRecognizer import KeyRecognizer
+from SongChordRecognizer_Pipeline.DataPreprocessor import DataPreprocessor
+from SongChordRecognizer_Pipeline.ChordVoter import ChordVoter
 
 
 # Ignore warnings
@@ -69,25 +76,25 @@ parser.add_argument(
 )
 parser.add_argument(
     "--original_model_path",
-    default="./ACR_Pipeline/models/original_crnn.h5",
+    default="./SongChordRecognizer_Pipeline/models/original_crnn.h5",
     type=str,
-    help="Path to the model predicting original songs.",
+    help="Path to the original model.",
 )
 parser.add_argument(
     "--transposed_model_path",
-    default="./ACR_Pipeline/models/transposed_crnn.h5",
+    default="./SongChordRecognizer_Pipeline/models/transposed_crnn.h5",
     type=str,
-    help="Path to the model predicting songs transposed to C.",
+    help="Path to the transposed model.",
 )
 parser.add_argument(
     "--original_preprocessor_path",
-    default="./ACR_Pipeline/models/original_preprocessor.bin",
+    default="./SongChordRecognizer_Pipeline/models/original_preprocessor.bin",
     type=str,
-    help="Path to the preprocessor that preprocesses original songs.",
+    help="Path to the preprocessor for the original model.",
 )
 parser.add_argument(
     "--transposed_preprocessor_path",
-    default="./ACR_Pipeline/models/transposed_preprocessor.bin",
+    default="./SongChordRecognizer_Pipeline/models/transposed_preprocessor.bin",
     type=str,
     help="Path to the preprocessor that preprocesses songs transposed to C.",
 )
