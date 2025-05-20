@@ -79,9 +79,9 @@ async def predict_chord(file: UploadFile = File(...)):
 
         return JSONResponse(
             content={
+                "key": key,
                 "main_chord": main_chord,
                 "chord_sequence": chord_sequence,
-                "key": key,
             }
         )
 
