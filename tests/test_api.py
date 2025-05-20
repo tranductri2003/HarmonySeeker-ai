@@ -6,9 +6,9 @@ def test_predict_chord():
     response = {
         "status_code": 200,
         "json": lambda: {
+            "key": "C",
             "main_chord": "C",
             "chord_sequence": ["C", "G", "Am", "F"],
-            "key": "C",
         },
     }
 
