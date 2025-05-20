@@ -52,6 +52,11 @@ class KeyRecognizer:
                     score = score + chord_counts[chord_ind]
             scores[key] = score
 
-        # Get the most common key with the highest score
-        key = max(scores, key=scores.get).split("/")[0]
-        return key
+        # Sort keys by score descending
+        sorted_keys = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        # Get the best key
+        best_key = sorted_keys[0][0].split("/")[0]
+        # If the best key is 'N', pick the next best (if available)
+        if best_key == "N" and len(sorted_keys) > 1:
+            best_key = sorted_keys[1][0].split("/")[0]
+        return best_key
