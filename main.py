@@ -36,7 +36,12 @@ app.add_middleware(
 )
 
 
-@app.post("/predict-chord")
+@app.get("/health")
+async def health():
+    return JSONResponse(content={"status": "ok"})
+
+
+@app.post("/ai/predict-chord")
 async def predict_chord(file: UploadFile = File(...)):
     """
     Predict the main chord, full chord sequence, and key from an uploaded audio file.
@@ -94,7 +99,7 @@ async def predict_chord(file: UploadFile = File(...)):
             os.remove(tmp_path)
 
 
-@app.post("/voice-removal")
+@app.post("/ai/voice-removal")
 async def voice_removal(file: UploadFile = File(...)):
     """
     Placeholder for future voice removal implementation.
