@@ -372,6 +372,8 @@ FodyWeavers.xsd
 
 # Venv directory
 venv/
+venv_chord_recognizer/
+venv_voice_separator/
 
 # Environment variables
 .env

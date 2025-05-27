@@ -1,8 +1,6 @@
 from keras import saving, ops, layers
 import keras
-
-
-
+from tensorflow.keras import ops
 
 
 @saving.register_keras_serializable()
@@ -33,10 +31,12 @@ class TimeDistributedDenseBlock(layers.Layer):
 
     def get_config(self):
         config = super().get_config()
-        config.update({
-            "bottleneck_factor": self.bottleneck_factor,
-            "fft_dim": self.fft_dim,
-        })
+        config.update(
+            {
+                "bottleneck_factor": self.bottleneck_factor,
+                "fft_dim": self.fft_dim,
+            }
+        )
         return config
 
 
@@ -97,13 +97,15 @@ class TimeFrequencyTransformBlock(layers.Layer):
 
     def get_config(self):
         config = super().get_config()
-        config.update({
-            "channels": self.channels,
-            "length": self.length,
-            "fft_dim": self.fft_dim,
-            "bottleneck_factor": self.bottleneck_factor,
-            "in_channels": self.in_channels,
-        })
+        config.update(
+            {
+                "channels": self.channels,
+                "length": self.length,
+                "fft_dim": self.fft_dim,
+                "bottleneck_factor": self.bottleneck_factor,
+                "in_channels": self.in_channels,
+            }
+        )
         return config
 
 
@@ -125,10 +127,12 @@ class Downscale(layers.Layer):
 
     def get_config(self):
         config = super().get_config()
-        config.update({
-            "channels": self.channels,
-            "scale": self.scale,
-        })
+        config.update(
+            {
+                "channels": self.channels,
+                "scale": self.scale,
+            }
+        )
         return config
 
 
@@ -142,7 +146,9 @@ class Upscale(layers.Layer):
         self.scale = scale
 
     def build(self, *_):
-        self.conv = layers.Conv2DTranspose(self.channels, self.scale, self.scale, use_bias=False)
+        self.conv = layers.Conv2DTranspose(
+            self.channels, self.scale, self.scale, use_bias=False
+        )
         self.norm = layers.GroupNormalization(groups=-1)
 
     def call(self, inputs):
@@ -150,8 +156,10 @@ class Upscale(layers.Layer):
 
     def get_config(self):
         config = super().get_config()
-        config.update({
-            "channels": self.channels,
-            "scale": self.scale,
-        })
+        config.update(
+            {
+                "channels": self.channels,
+                "scale": self.scale,
+            }
+        )
         return config
