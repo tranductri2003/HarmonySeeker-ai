@@ -7,12 +7,14 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from fastapi import HTTPException
 
 from SongChordRecognizer_Pipeline.DataPreprocessor import DataPreprocessor
 from SongChordRecognizer_Training.Models import CRNN_basic_WithStandardScaler
 from SongChordRecognizer_Training.Spectrograms import cqt_spectrogram
 from SongChordRecognizer_Pipeline.KeyRecognizer import KeyRecognizer
-
+from VoicesSeperator_Pipeline.inferrence import separate_audio
 # Load environment variables
 load_dotenv()
 CRNN_MODEL_PATH = os.getenv("CRNN_MODEL_PATH")
@@ -104,6 +106,16 @@ async def voice_removal(file: UploadFile = File(...)):
     """
     Placeholder for future voice removal implementation.
     """
-    return JSONResponse(
-        content={"message": "Voice removal not implemented yet."}, status_code=501
+    MODEL_PATH = "VoicesSeperator_Pipeline/model_jax.keras"
+
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No file provided")
+
+    result = separate_audio(file ,MODEL_PATH)
+
+
+    return StreamingResponse(
+        content=result,
+        media_type="application/zip",
+        headers={"Content-Disposition": "attachment; filename=separated_audio.zip"}
     )

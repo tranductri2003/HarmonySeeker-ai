@@ -375,3 +375,5 @@ venv/
 
 # Environment variables
 .env
+
+**/*.keras
