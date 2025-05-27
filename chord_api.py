@@ -1,20 +1,16 @@
 import os
 import tempfile
-
 import numpy as np
 import librosa
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
-from fastapi import HTTPException
 
 from SongChordRecognizer_Pipeline.DataPreprocessor import DataPreprocessor
 from SongChordRecognizer_Training.Models import CRNN_basic_WithStandardScaler
 from SongChordRecognizer_Training.Spectrograms import cqt_spectrogram
 from SongChordRecognizer_Pipeline.KeyRecognizer import KeyRecognizer
-from VoicesSeparator_Pipeline.inferrence import separate_audio
 
 # Load environment variables
 load_dotenv()
@@ -102,20 +98,7 @@ async def predict_chord(file: UploadFile = File(...)):
             os.remove(tmp_path)
 
 
-@app.post("/ai/voice-removal")
-async def voice_removal(file: UploadFile = File(...)):
-    """
-    Placeholder for future voice removal implementation.
-    """
-    MODEL_PATH = "VoicesSeperator_Pipeline/model_jax.keras"
+if __name__ == "__main__":
+    import uvicorn
 
-    if not file.filename:
-        raise HTTPException(status_code=400, detail="No file provided")
-
-    result = separate_audio(file, MODEL_PATH)
-
-    return StreamingResponse(
-        content=result,
-        media_type="application/zip",
-        headers={"Content-Disposition": "attachment; filename=separated_audio.zip"},
-    )
+    uvicorn.run(app, host="0.0.0.0", port=8001)
