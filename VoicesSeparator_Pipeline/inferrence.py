@@ -12,19 +12,7 @@ import zipfile
 MODEL_PATH = "/kaggle/input/model-remover/model_jax (4).keras"
 
 
-def separate_audio(original_audio, model_path=MODEL_PATH):
-    """
-    Main function to separate vocals and music from input audio.
-
-    Args:
-        input_path: Path to input audio file
-        vocals_output_path: Path to save separated vocals (optional)
-        music_output_path: Path to save separated music/instrumental (optional)
-        model_path: Path to trained model
-
-    Returns:
-        dict: Dictionary containing 'vocals', 'music', and 'original' audio arrays
-    """
+def separate_audio(audio, sr, model_path=MODEL_PATH):
     print(f"Loading model from: {model_path}")
 
     # Load the trained model with custom objects
@@ -50,7 +38,7 @@ def separate_audio(original_audio, model_path=MODEL_PATH):
 
     # Load and preprocess audio
     try:
-        # original_audio = load_audio(input_path)
+        original_audio = load_audio(audio, sr)
         original_length = len(original_audio)
         print(
             f"Audio loaded: {len(original_audio)} samples ({len(original_audio)/TARGET_SAMPLE_RATE:.2f} seconds)"
@@ -116,11 +104,12 @@ def separate_audio(original_audio, model_path=MODEL_PATH):
 
     vocals_buffer.seek(0)
     music_buffer.seek(0)
-
-    zip_buffer = create_zip_from_buffers(
-        {"vocals": vocals_buffer, "music": music_buffer}
-    )
-
+    print(vocals_buffer, music_buffer)
+    zip_buffer = create_zip_from_buffers({
+        "vocals": vocals_buffer,
+        "music": music_buffer
+    })
+    print(zip_buffer)
     return zip_buffer
 
 
