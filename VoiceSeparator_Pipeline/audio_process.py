@@ -4,20 +4,26 @@ import soundfile as sf
 from keras import saving, ops, layers
 import keras
 import io
-# Configuration parameters (phải giống với training)
-CHUNK_SIZE = 65024  # ~4 seconds at 16kHz
-STFT_N_FFT = 2048
-STFT_HOP_LENGTH = 512
-N_SUBBANDS = 4
-N_INSTRUMENTS = 1  # vocals only
-TARGET_SAMPLE_RATE = 16000
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Configuration parameters from environment
+CHUNK_SIZE = int(os.getenv("VOICE_CHUNK_SIZE"))
+STFT_N_FFT = int(os.getenv("VOICE_STFT_N_FFT"))
+STFT_HOP_LENGTH = int(os.getenv("VOICE_STFT_HOP_LENGTH"))
+N_SUBBANDS = int(os.getenv("VOICE_N_SUBBANDS"))
+N_INSTRUMENTS = int(os.getenv("VOICE_N_INSTRUMENTS"))
+TARGET_SAMPLE_RATE = int(os.getenv("VOICE_TARGET_SAMPLE_RATE"))
+
 
 def load_audio(audio, sr, target_sr=TARGET_SAMPLE_RATE):
     """Load audio file and convert to mono at target sample rate."""
     # file_bytes = await file.read()
     # audio, sr = sf.read(io.BytesIO(file_bytes), dtype='float32')
-    #audio, sr = sf.read(file_path, dtype='float32')
-    
+    # audio, sr = sf.read(file_path, dtype='float32')
+
     # Convert to mono if stereo
     if len(audio.shape) > 1:
         audio = np.mean(audio, axis=1)
