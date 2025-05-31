@@ -1,15 +1,19 @@
 from keras import saving, ops, layers
 import keras
-from VoicesSeparator_Pipeline.audio_process import inverse_stft
+import os
+from dotenv import load_dotenv
+from VoiceSeparator_Pipeline.audio_process import inverse_stft
 
+# Load environment variables
+load_dotenv()
 
-# Configuration parameters (phải giống với training)
-CHUNK_SIZE = 65024  # ~4 seconds at 16kHz
-STFT_N_FFT = 2048
-STFT_HOP_LENGTH = 512
-N_SUBBANDS = 4
-N_INSTRUMENTS = 1  # vocals only
-TARGET_SAMPLE_RATE = 16000
+# Configuration parameters from environment
+CHUNK_SIZE = int(os.getenv("VOICE_CHUNK_SIZE"))
+STFT_N_FFT = int(os.getenv("VOICE_STFT_N_FFT"))
+STFT_HOP_LENGTH = int(os.getenv("VOICE_STFT_HOP_LENGTH"))
+N_SUBBANDS = int(os.getenv("VOICE_N_SUBBANDS"))
+N_INSTRUMENTS = int(os.getenv("VOICE_N_INSTRUMENTS"))
+TARGET_SAMPLE_RATE = int(os.getenv("VOICE_TARGET_SAMPLE_RATE"))
 
 
 @saving.register_keras_serializable()

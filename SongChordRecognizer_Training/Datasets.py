@@ -527,7 +527,7 @@ class IsophonicsDataset(Dataset):
             n_steps = 0
         # transpose song to C
         waveform_shifted = librosa.effects.pitch_shift(
-            waveform, sample_rate, n_steps=n_steps
+            y=waveform, sr=sample_rate, n_steps=n_steps
         )
         # Get spectrogram
         spectrogram = spectrogram_generator(

@@ -3,13 +3,16 @@ import numpy as np
 import soundfile as sf
 from keras import saving, ops, layers
 import keras
-from VoicesSeparator_Pipeline.model import *
-from VoicesSeparator_Pipeline.metric import *
-from VoicesSeparator_Pipeline.audio_process import *
+from dotenv import load_dotenv
+from VoiceSeparator_Pipeline.model import *
+from VoiceSeparator_Pipeline.metric import *
+from VoiceSeparator_Pipeline.audio_process import *
 import io
 import zipfile
 
-MODEL_PATH = "/kaggle/input/model-remover/model_jax (4).keras"
+# Load environment variables
+load_dotenv()
+MODEL_PATH = os.getenv("VOICE_MODEL_PATH")
 
 
 def separate_audio(audio, sr, model_path=MODEL_PATH):
@@ -33,8 +36,6 @@ def separate_audio(audio, sr, model_path=MODEL_PATH):
     except Exception as e:
         print(f"Error loading model: {e}")
         return None
-
-    # print(f"Loading audio from: {input_path}")
 
     # Load and preprocess audio
     try:
@@ -79,7 +80,6 @@ def separate_audio(audio, sr, model_path=MODEL_PATH):
     separated_vocals = postprocess_audio(all_vocals_predictions, original_length)
 
     # Extract music by subtracting vocals from original
-    # First, process original audio to match vocals length
     processed_original = postprocess_audio(all_original_chunks, original_length)
 
     # Create music track by subtracting vocals from original
@@ -95,7 +95,7 @@ def separate_audio(audio, sr, model_path=MODEL_PATH):
     separated_music = normalize_audio(separated_music)
     processed_original = normalize_audio(processed_original)
 
-    # Ghi vào BytesIO thay vì file
+    # Write to BytesIO instead of files
     vocals_buffer = io.BytesIO()
     music_buffer = io.BytesIO()
 
@@ -105,10 +105,9 @@ def separate_audio(audio, sr, model_path=MODEL_PATH):
     vocals_buffer.seek(0)
     music_buffer.seek(0)
     print(vocals_buffer, music_buffer)
-    zip_buffer = create_zip_from_buffers({
-        "vocals": vocals_buffer,
-        "music": music_buffer
-    })
+    zip_buffer = create_zip_from_buffers(
+        {"vocals": vocals_buffer, "music": music_buffer}
+    )
     print(zip_buffer)
     return zip_buffer
 
