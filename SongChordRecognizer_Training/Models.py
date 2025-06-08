@@ -182,9 +182,9 @@ class MLP_scalered(MLP):
         )
 
 
-class CRNN:
+class CNN:
     """
-    Very basic CRNN model, maybe not working, who knows.
+    Very basic CNN model.
     """
 
     def __init__(
@@ -240,7 +240,7 @@ class CRNN:
         self.history = self.model.fit(
             data, targets, epochs=epochs, validation_data=validation_data
         )
-        print("[INFO] The CRNN model was successfully trained.")
+        print("[INFO] The CNN model was successfully trained.")
 
     def score(self, data, targets):
         _, test_acc = self.model.evaluate(data, targets, verbose=2)
@@ -261,7 +261,7 @@ class CRNN:
     def save(self, model_path="./model.h5"):
         # Save this model.
         self.model.save(model_path)
-        print("[INFO] The CRNN model was saved successfully")
+        print("[INFO] The CNN model was saved successfully")
 
     def load(self, model_path="./model.h5"):
         # Load tensorflow model
@@ -318,7 +318,7 @@ class CRNN:
         disp.plot(xticks_rotation="vertical", include_values=False)
 
 
-class CRNN_efficient(CRNN):
+class CRNN_efficient(CNN):
     """
     Efficient net based CRNN
     """
@@ -360,7 +360,7 @@ class CRNN_efficient(CRNN):
         print("[INFO] The CRNN model was successfully created.")
 
 
-class CRNN_basic(CRNN):
+class CRNN_basic(CNN):
     """
     CRNN model inspired by Junyan Jiang, Ke Chen, Wei li, Gus Xia, 2019.
     """
@@ -503,7 +503,7 @@ class CRNN_basic_WithStandardScaler:
         self.preprocessor = load(preprocessor_path)
 
 
-class CRNN_CRF(CRNN):
+class CRNN_CRF(CNN):
     """
     CRNN model inspired by Junyan Jiang, Ke Chen, Wei li, Gus Xia, 2019.
     """
