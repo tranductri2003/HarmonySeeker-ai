@@ -1,6 +1,6 @@
 tensorflow
 keras
-numpy
+numpy<2.0
 scikit-learn
 matplotlib
 librosa
@@ -14,3 +14,4 @@ python-dotenv
 python-multipart
 sounddevice
 scipy
+essentia

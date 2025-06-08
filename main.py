@@ -2,6 +2,7 @@ import os
 import tempfile
 import soundfile as sf
 import io
+import warnings
 
 import numpy as np
 import librosa
@@ -13,11 +14,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi import HTTPException
 
+# Suppress warnings
+warnings.filterwarnings("ignore")
+
+# Disable TensorFlow logging
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = (
+    "3"  # 0 = all, 1 = filter INFO, 2 = filter WARNING, 3 = filter ERROR
+)
+import tensorflow as tf
+
+tf.get_logger().setLevel("ERROR")
+
 from SongChordRecognizer_Pipeline.DataPreprocessor import DataPreprocessor
 from SongChordRecognizer_Training.Models import CRNN_basic_WithStandardScaler
 from SongChordRecognizer_Training.Spectrograms import cqt_spectrogram
 from SongChordRecognizer_Pipeline.KeyRecognizer import KeyRecognizer
 from VoiceSeparator_Pipeline.inferrence import separate_audio
+
+# Import Essentia for scale detection
+from essentia.standard import KeyExtractor
 
 # Load environment variables
 load_dotenv()
@@ -43,6 +58,22 @@ app.add_middleware(
 )
 
 
+def estimate_scale_with_essentia(y, sr):
+    """
+    Estimate the scale (major/minor) using Essentia KeyExtractor.
+    Only the scale is returned and used to assist CRNN prediction.
+    """
+    if sr != 44100:
+        y = librosa.resample(y, orig_sr=sr, target_sr=44100)
+        sr = 44100
+    y = y.astype(np.float32)
+
+    key_extractor = KeyExtractor()
+    key, scale, _ = key_extractor(y)
+
+    return scale
+
+
 @app.get("/health")
 async def health():
     return JSONResponse(content={"status": "ok"})
@@ -52,6 +83,7 @@ async def health():
 async def predict_chord(file: UploadFile = File(...)):
     """
     Predict the main chord, full chord sequence, and key from an uploaded audio file.
+    Uses Essentia to first detect the scale (major/minor) for better accuracy.
     """
     tmp_path = None
     try:
@@ -62,6 +94,9 @@ async def predict_chord(file: UploadFile = File(...)):
 
         # Load audio
         y, sr = librosa.load(tmp_path, sr=SAMPLE_RATE)
+
+        # 1. Get scale from Essentia
+        scale = estimate_scale_with_essentia(y, sr)
 
         # Load model and scaler
         model = CRNN_basic_WithStandardScaler()
@@ -80,20 +115,25 @@ async def predict_chord(file: UploadFile = File(...)):
         # Predict chords
         predictions = model.predict(x)
         chord_indices = predictions.argmax(axis=2).flatten()
+
         # Main chord (most frequent)
         main_chord_index = np.bincount(chord_indices).argmax()
         main_chord = DataPreprocessor.chord_indices_to_notations([main_chord_index])[0]
         chord_sequence = DataPreprocessor.chord_indices_to_notations(chord_indices)
+
         # Key detection (music key, not just most frequent chord)
         chords, counts = np.unique(chord_indices, return_counts=True)
         chord_counts = dict(zip(chords, counts))
-        key = KeyRecognizer.estimate_key(chord_counts)
+        key = KeyRecognizer.estimate_key(
+            chord_counts, use_relative_mode=True, target_scale=scale
+        )
 
         return JSONResponse(
             content={
                 "key": key,
                 "main_chord": main_chord,
                 "chord_sequence": chord_sequence,
+                "scale": scale,
             }
         )
 

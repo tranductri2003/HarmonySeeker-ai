@@ -27,20 +27,51 @@ class KeyRecognizer:
         "B": [23, 4, 8, 9, 13, 18, 22],
     }
 
+    relative_minor_map = {
+        "C": "A:min",
+        "C#": "A#:min",
+        "D": "B:min",
+        "D#": "C:min",
+        "E": "C#:min",
+        "F": "D:min",
+        "F#": "D#:min",
+        "G": "E:min",
+        "G#": "F:min",
+        "A": "F#:min",
+        "A#": "G:min",
+        "B": "G#:min",
+    }
+
+    relative_major_map = {v: k for k, v in relative_minor_map.items()}
+
     @staticmethod
-    def estimate_key(chord_counts):
+    def estimate_key(chord_counts, target_scale=None, use_relative_mode=False):
         """
-        Function will estimate key based on the chord counts predicted (with not that high accuracy) from the audio.
-        All estimated keys are in Ionian modus. The function doesn't estimate the modus (dorian, phrygian, lydian, ...).
+        Estimate the musical key of a song based on predicted chord distribution.
+
+        By default, this function returns the most likely major key, determined by
+        counting how many chords match typical chords of each key (based on `key_chords`).
+
+        If `use_relative_mode=True` and `target_scale` is provided ('major' or 'minor'),
+        the result will be mapped to the corresponding relative key. For example:
+        - If the estimated key is 'C' and `target_scale='minor'`, the result will be 'A:min'.
+        - If the estimated key is 'A:min' and `target_scale='major'`, the result will be 'C'.
 
         Parameters
         ----------
-        chord_counts : dictionary, key: int, value: int
-            dictionary of chord counts in the song, a key indicates the chord index, a value indicates its count in the audio
+        chord_counts : dict[int, int]
+            A dictionary where the key is the chord index and the value is the count
+            of how often the chord appeared in the song.
+        target_scale : str, optional
+            If set to 'major' or 'minor', the final result will be mapped accordingly
+            when `use_relative_mode=True`.
+        use_relative_mode : bool, optional
+            Whether to apply relative key mapping based on the target scale.
+
         Returns
         -------
-        key : np array
-            flattened window of spectrograms arround specific time point
+        key : str
+            The estimated musical key of the song (e.g., 'C', 'A:min', 'G#:min', etc.).
         """
         scores = {}
         # Iterate over all keys
@@ -59,4 +90,17 @@ class KeyRecognizer:
         # If the best key is 'N', pick the next best (if available)
         if best_key == "N" and len(sorted_keys) > 1:
             best_key = sorted_keys[1][0].split("/")[0]
+
+        if use_relative_mode and target_scale:
+            if (
+                target_scale.lower() == "minor"
+                and best_key in KeyRecognizer.relative_minor_map
+            ):
+                return KeyRecognizer.relative_minor_map[best_key]
+            elif (
+                target_scale.lower() == "major"
+                and best_key + ":min" in KeyRecognizer.relative_major_map
+            ):
+                return KeyRecognizer.relative_major_map[best_key + ":min"]
+
         return best_key
