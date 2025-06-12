@@ -19,6 +19,8 @@ import sklearn_crfsuite
 from sklearn_crfsuite import CRF
 from joblib import dump, load
 from tensorflow.keras.layers import GRU, Bidirectional
+from tqdm.keras import TqdmCallback
+from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 
 
 class MLP:
@@ -187,12 +189,7 @@ class CNN:
     Very basic CNN model.
     """
 
-    def __init__(
-        self,
-    ):
-        input_shape = (1000, 252, 1)
-        output_classes = 25
-        # Create model
+    def __init__(self, input_shape=(1000, 252, 1), output_classes=25):
         model = tensorflow.keras.models.Sequential()
 
         # Feature Extractor
@@ -202,6 +199,7 @@ class CNN:
             )
         )
         model.add(tensorflow.keras.layers.MaxPooling2D((2, 2), padding="same"))
+
         model.add(
             tensorflow.keras.layers.Conv2D(
                 64, (3, 3), activation="relu", padding="same"
@@ -214,14 +212,14 @@ class CNN:
             )
         )
 
-        # Classifier - RNN
+        # Classifier
         model.add(tensorflow.keras.layers.Flatten())
         model.add(tensorflow.keras.layers.Dense(64, activation="relu"))
         model.add(tensorflow.keras.layers.Dense(output_classes, activation="softmax"))
 
-        # Compile model
+        # Compile model with fixed learning rate and correct logits usage
         model.compile(
-            optimizer=tensorflow.keras.optimizers.Adam(learning_rate=0.1),
+            optimizer=tensorflow.keras.optimizers.Adam(learning_rate=0.001),
             loss=tensorflow.keras.losses.SparseCategoricalCrossentropy(
                 from_logits=True
             ),
@@ -229,16 +227,22 @@ class CNN:
         )
 
         self.model = model
+        model.summary()
 
-    def fit(self, data, targets, dev_data=[], dev_targets=[], epochs=50):
-        if dev_data == [] or dev_targets == []:
+    def fit(self, data, targets, dev_data=[], dev_targets=[], epochs=50, batch_size=32):
+        if len(dev_data) == 0 or len(dev_targets) == 0:
             validation_data = None
         else:
             validation_data = (dev_data, dev_targets)
 
         # Train model
         self.history = self.model.fit(
-            data, targets, epochs=epochs, validation_data=validation_data
+            data,
+            targets,
+            epochs=epochs,
+            validation_data=validation_data,
+            batch_size=batch_size,
+            callbacks=[TqdmCallback(verbose=2)],
         )
         print("[INFO] The CNN model was successfully trained.")
 
@@ -316,6 +320,65 @@ class CNN:
             display_labels=display_labels,
         )
         disp.plot(xticks_rotation="vertical", include_values=False)
+
+    def display_confusion_matrix_cnn(self, data, targets, save_path=None):
+        # Define labels
+        display_labels = np.array(
+            [
+                "N",
+                "C",
+                "C:min",
+                "C#",
+                "C#:min",
+                "D",
+                "D:min",
+                "D#",
+                "D#:min",
+                "E",
+                "E:min",
+                "F",
+                "F:min",
+                "F#",
+                "F#:min",
+                "G",
+                "G:min",
+                "G#",
+                "G#:min",
+                "A",
+                "A:min",
+                "A#",
+                "A#:min",
+                "B",
+                "B:min",
+            ]
+        )
+        labels = np.arange(len(display_labels))
+
+        # Predict
+        predictions = self.model.predict(data)
+        predictions = tensorflow.argmax(predictions, axis=1)
+
+        # Flatten targets if necessary
+        if len(targets.shape) > 1:
+            targets = targets.reshape((-1,))
+
+        # Confusion matrix
+        disp = ConfusionMatrixDisplay(
+            confusion_matrix=confusion_matrix(
+                targets, predictions, labels=labels, normalize="all"
+            ),
+            display_labels=display_labels,
+        )
+
+        # Plot and optionally save
+        fig, ax = plt.subplots(figsize=(12, 12))
+        disp.plot(ax=ax, xticks_rotation="vertical", include_values=False)
+
+        if save_path:
+            plt.savefig(save_path)
+            print(f"✅ Saved confusion matrix to {save_path}")
+        else:
+            plt.show()
 
 
 class CRNN_efficient(CNN):
@@ -407,17 +470,6 @@ class CRNN_basic(CNN):
             )
         )
         model.add(tensorflow.keras.layers.BatchNormalization())
-        # Doesn't improve the result
-        # model.add(tensorflow.keras.layers.MaxPooling2D((1,3),padding='same'))
-        # model.add(tensorflow.keras.layers.Conv2D(64, (3,3), activation='relu',padding='same'))
-        # model.add(tensorflow.keras.layers.BatchNormalization())
-        # model.add(tensorflow.keras.layers.Conv2D(64, (3,3), activation='relu',padding='same'))
-        # model.add(tensorflow.keras.layers.BatchNormalization())
-        # model.add(tensorflow.keras.layers.MaxPooling2D((1,4),padding='same'))
-        # model.add(tensorflow.keras.layers.Conv2D(80, (3,3), activation='relu',padding='same'))
-        # model.add(tensorflow.keras.layers.BatchNormalization())
-        # model.add(tensorflow.keras.layers.Conv2D(80, (3,3), activation='relu',padding='same'))
-        # model.add(tensorflow.keras.layers.BatchNormalization())
 
         _, n_frames, _, _ = model.output_shape
 
@@ -450,6 +502,73 @@ class CRNN_basic(CNN):
         self.model = model
         print("[INFO] The CRNN model was successfully created.")
 
+    def display_confusion_matrix(self, data, targets, save_path=None):
+        # Define labels
+        display_labels = np.array(
+            [
+                "N",
+                "C",
+                "C:min",
+                "C#",
+                "C#:min",
+                "D",
+                "D:min",
+                "D#",
+                "D#:min",
+                "E",
+                "E:min",
+                "F",
+                "F:min",
+                "F#",
+                "F#:min",
+                "G",
+                "G:min",
+                "G#",
+                "G#:min",
+                "A",
+                "A:min",
+                "A#",
+                "A#:min",
+                "B",
+                "B:min",
+            ]
+        )
+        labels = np.array([i for i in range(len(display_labels))])
+
+        # Generate predictions and targets
+        predictions = self.model.predict(data)
+
+        # Handle shape changes - model now outputs (batch_size, classes) directly
+        # instead of (batch_size, sequence_length, classes)
+        if len(predictions.shape) == 2:
+            # Already in the right shape
+            predictions = tensorflow.argmax(predictions, axis=1)
+        else:
+            # For backward compatibility - if output is still 3D
+            a1, a2, a3 = predictions.shape
+            predictions = predictions.reshape((a1 * a2, a3))
+            predictions = tensorflow.argmax(predictions, axis=1)
+
+        # Reshape targets to 1D if needed
+        if len(targets.shape) > 1:
+            a1, a2 = targets.shape
+            targets = targets.reshape((a1 * a2))
+
+        # Set and display confusion matrix
+        disp = ConfusionMatrixDisplay(
+            confusion_matrix=confusion_matrix(
+                targets, predictions, labels=labels, normalize="all"
+            ),
+            display_labels=display_labels,
+        )
+        disp.plot(xticks_rotation="vertical", include_values=False)
+
+        if save_path:
+            plt.savefig(save_path)
+            print(f"✅ Saved confusion matrix to {save_path}")
+        else:
+            plt.show()
+
 
 class CRNN_basic_WithStandardScaler:
     """
@@ -461,10 +580,12 @@ class CRNN_basic_WithStandardScaler:
             self.model = CRNN_basic(input_shape, output_classes)
             self.preprocessor = sklearn.preprocessing.StandardScaler()
             print(
-                "[INFO] The Baisc CRNN with Standar Scaler was successfully initialized"
+                "[INFO] The Basic CRNN with Standard Scaler was successfully initialized"
             )
 
-    def fit(self, train_x, train_y, dev_data=[], dev_targets=[], epochs=50):
+    def fit(
+        self, train_x, train_y, dev_data=[], dev_targets=[], epochs=50, batch_size=32
+    ):
         _, n_frames, n_chromas, _ = train_x.shape
         self.preprocessor.fit(train_x.reshape((-1, 252)))
         print("[INFO] The preprocessor was successfully trained")
@@ -472,7 +593,14 @@ class CRNN_basic_WithStandardScaler:
         train_x = self.preprocessor.transform(train_x.reshape((-1, 252))).reshape(
             (-1, n_frames, n_chromas, 1)
         )
-        self.model.fit(train_x, train_y, dev_data, dev_targets, epochs=epochs)
+        self.model.fit(
+            train_x,
+            train_y,
+            dev_data,
+            dev_targets,
+            epochs=epochs,
+            batch_size=batch_size,
+        )
         print("[INFO] The CRNN model was successfully trained.")
 
     def score(self, data, targets):

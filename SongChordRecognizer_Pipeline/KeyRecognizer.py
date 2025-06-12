@@ -27,7 +27,8 @@ class KeyRecognizer:
         "B": [23, 4, 8, 9, 13, 18, 22],
     }
 
-    relative_minor_map = {
+    # Explicit mappings between major and minor keys
+    major_to_minor_map = {
         "C": "A:min",
         "C#": "A#:min",
         "D": "B:min",
@@ -42,7 +43,20 @@ class KeyRecognizer:
         "B": "G#:min",
     }
 
-    relative_major_map = {v: k for k, v in relative_minor_map.items()}
+    minor_to_major_map = {
+        "A:min": "C",
+        "A#:min": "C#",
+        "B:min": "D",
+        "C:min": "D#",
+        "C#:min": "E",
+        "D:min": "F",
+        "D#:min": "F#",
+        "E:min": "G",
+        "F:min": "G#",
+        "F#:min": "A",
+        "G:min": "A#",
+        "G#:min": "B",
+    }
 
     @staticmethod
     def estimate_key(chord_counts, target_scale=None, use_relative_mode=False):
@@ -74,33 +88,46 @@ class KeyRecognizer:
             The estimated musical key of the song (e.g., 'C', 'A:min', 'G#:min', etc.).
         """
         scores = {}
-        # Iterate over all keys
         for key in KeyRecognizer.key_chords:
             score = 0
-            # Sum number of chords that fits the key
             for chord_ind in KeyRecognizer.key_chords[key]:
                 if chord_ind in chord_counts:
-                    score = score + chord_counts[chord_ind]
+                    score += chord_counts[chord_ind]
             scores[key] = score
 
-        # Sort keys by score descending
+        # Sort descending
         sorted_keys = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        # Get the best key
         best_key = sorted_keys[0][0].split("/")[0]
-        # If the best key is 'N', pick the next best (if available)
         if best_key == "N" and len(sorted_keys) > 1:
             best_key = sorted_keys[1][0].split("/")[0]
 
-        if use_relative_mode and target_scale:
-            if (
-                target_scale.lower() == "minor"
-                and best_key in KeyRecognizer.relative_minor_map
-            ):
-                return KeyRecognizer.relative_minor_map[best_key]
-            elif (
-                target_scale.lower() == "major"
-                and best_key + ":min" in KeyRecognizer.relative_major_map
-            ):
-                return KeyRecognizer.relative_major_map[best_key + ":min"]
+        if not use_relative_mode or not target_scale:
+            return best_key
+
+        target_scale = target_scale.lower()
+        is_best_minor = best_key.endswith(":min")
+        is_target_minor = target_scale == "minor"
+
+        # Case 1: Same scale type
+        if is_best_minor and is_target_minor:
+            return best_key
+        if not is_best_minor and not is_target_minor:
+            return best_key
+
+        # Case 2: Convert from major to minor
+        if not is_best_minor and is_target_minor:
+            if best_key in KeyRecognizer.major_to_minor_map:
+                return KeyRecognizer.major_to_minor_map[best_key]
+            else:
+                print(f"[WARN] No mapping from major to minor for: {best_key}")
+                return best_key + ":min"
+
+        # Case 3: Convert from minor to major
+        if is_best_minor and not is_target_minor:
+            if best_key in KeyRecognizer.minor_to_major_map:
+                return KeyRecognizer.minor_to_major_map[best_key]
+            else:
+                print(f"[WARN] No mapping from minor to major for: {best_key}")
+                return best_key.replace(":min", "")
 
         return best_key

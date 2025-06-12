@@ -1,0 +1,126 @@
+file,true_chord,predicted_key,is_correct
+[D#] - Phút cuối - Tuấn Vũ.wav,D#,D,True
+[F#:min] - Vùng lá me bay - Như Quỳnh.wav,F#:min,D,False
+[F#:min] - Mưa nửa đêm - Bảo Yến.wav,F#:min,D,False
+[F#:min] - Vùng lá me bay - Lưu Ánh Loan.wav,F#:min,D,False
+[F#:min] - Vùng lá me bay - Dương Hồng Loan.wav,F#:min,A,False
+[C#] - Có những niềm riêng - Tuấn Ngọc.wav,C#,D,True
+[C#] - Thao thức vì em - Cẩm Ly.wav,C#,G#,False
+[C#] - Mùa thu cho em - Khánh Hà.wav,C#,D,True
+[C#] - Mùa thu cho em - Ngọc Lan.wav,C#,D,True
+[G] - Bây giờ tháng mấy - Chế Linh.wav,G,D,False
+[G] - Phút cuối - Đàm Vĩnh Hưng.wav,G,G,True
+[G] - Mưa hồng - Ngọc Lan.wav,G,D,False
+[G] - Thao thức vì em - Quang Linh.wav,G,D,False
+[G] - Có những niềm riêng - Thanh Lan.wav,G,C,False
+[G] - Mưa Hồng - Lệ Quyên.wav,G,C,False
+[G] - Về đây nghe em - Tuấn Ngọc.wav,G,G,True
+[G] - Mưa hồng - Thanh Hà.wav,G,C,False
+[G] - Mùa thu cho em - Xuân Phú.wav,G,G,True
+[G#:min] - Em gái mưa - Mr.Siro.wav,G#:min,D,False
+[A] - Tuổi xa người - Tuấn Ngọc.wav,A,D,False
+[A] - Hãy yêu nhau đi - Trần Thu Hà.wav,A,D,False
+[A] - Phút cuối - Thiên Kim.wav,A,D,False
+[A] - Hãy yêu nhau đi - Lê Uyên.wav,A,D,False
+[A] - Tuổi xa người - Xuân Phú.wav,A,D,False
+[A] - Tuổi xa người - Trọng Thanh.wav,A,G,False
+[A] - Phút cuối - Thiên Trang.wav,A,D,False
+[A] - Thao thức vì em - Bằng Kiều.wav,A,D,False
+[A] - Biết đâu nguồn cội - Khánh Ly.wav,A,G,False
+[A] - Mùa thu cho em - Tùng Dương.wav,A,D,False
+[A] - Mưa chiều kỷ niệm - Tuấn Vũ.wav,A,F,False
+[A] - Phút cuối - Bằng Kiều.wav,A,D,False
+[A] - Tuổi xa người - Duy Quang.wav,A,D,False
+[A] - Bây giờ tháng mấy - Đức Huy.wav,A,D,False
+[F] - Thao thức vì em - Elvis Phương.wav,F,C,False
+[F] - Mùa thu cho em - Đức Huy.wav,F,F,True
+[F] - Mưa hồng - Khánh Ly.wav,F,D,False
+[F] - Mưa hồng - Hồng Nhung.wav,F,C,False
+[F] - Lệ đá - Giang Hồng Ngọc.wav,F,A#,False
+[F] - Mưa hồng - Kiều Nga.wav,F,G,False
+[F] - Biển tình - Quang Lê.wav,F,D,False
+[F] - Thao thức vì em - Dương Ngọc Thái.wav,F,G,False
+[F] - Mưa hồng - Thiên Kim.wav,F,D,False
+[F] - Phút cuối - Dương Ngọc Thái.wav,F,G,False
+[F] - Tuổi xa người - Mai Khôi.wav,F,F,True
+[F] - Biển tình - Dương Ngọc Thái.wav,F,D,False
+[A:min] - Diễm xưa - Khánh Ly.wav,A:min,D,False
+[A:min] - Tuổi đá buồn - Lệ Thu.wav,A:min,D,False
+[A:min] - Dấu tình sầu - Chế Linh.wav,A:min,G,False
+[A:min] - Diễm xưa - Như Mai.wav,A:min,G,False
+[A:min] - Diễm xưa - Phạm Thu Hà.wav,A:min,C,False
+[A:min] - Thương nhay ngày mưa - Elvis Phương.wav,A:min,D,False
+[A:min] - Thương nhau ngày mưa - Tuấn Ngọc.wav,A:min,D,False
+[A:min] - Tuổi đá buồn - Khánh Ly.wav,A:min,G,False
+[A:min] - Dấu tình sầu - Don Hồ.wav,A:min,D,False
+[C:min] - Tuổi đá buồn - Ngọc Lan.wav,C:min,C,True
+[C:min] - Dấu tình sầu - Cao Thái Sơn.wav,C:min,F,False
+[C:min] - Tuổi đá buồn - Như Mai.wav,C:min,D#,False
+[C:min] - Diễm xưa - Trần Thu Hà.wav,C:min,C,True
+[C:min] - Tuổi đá buồn - Hồng Nhung.wav,C:min,F,False
+[F#] - Biển tình - Đàm Vĩnh Hưng.wav,F#,G,True
+[B:min] - Diễm xưa - Tuấn Vũ.wav,B:min,D,False
+[B:min] - Tuổi đá buồn - Lệ Hồng.wav,B:min,G,False
+[B:min] - Diễm xưa - Lệ Quyên.wav,B:min,D,False
+[B:min] - Diễm xưa - Mỹ Lệ.wav,B:min,D,False
+[B:min] - Diễm xưa - Lê Thanh Huyền Trân.wav,B:min,D#,False
+[F:min] - Tình đơn phương - Huy Vũ.wav,F:min,D#,False
+[C] - Bây giờ tháng mấy - Đàm Vĩnh Hưng.wav,C,G,False
+[C] - Biển tình - Lệ Quyên.wav,C,C,True
+[C] - Bây giờ tháng mấy - Lê Hiếu.wav,C,G,False
+[C] - Mùa thu cho em - Ngọc Lan.wav,C,D#,False
+[C] - Bây giờ tháng mấy - Trọng Tấn.wav,C,C,True
+[C] - Mùa thu cho em - Phạm Thu Hà.wav,C,F,False
+[C] - Mưa Hồng - Lê Hiếu.wav,C,G,False
+[C] - Phút cuối - Hạ Vy.wav,C,C,True
+[C] - Biển tình - Hoàng Châu.wav,C,G,False
+[C] - Biển tình - Chu Thuý Quỳnh.wav,C,C,True
+[C] - Biển tình - Thanh Tuyền.wav,C,C,True
+[C] - Mùa thu cho em - Ý Lan.wav,C,D,False
+[C] - Ai đưa em về - Quỳnh Lan.wav,C,G,False
+[C] - Biển tình - Hạ Vy.wav,C,C,True
+[C] - Mưa hồng - Cao Duy.wav,C,C,True
+[D] - Lệ đá - Bảo Yến.wav,D,G,False
+[D] - Mùa thu cho em - Giang Hồng Ngọc.wav,D,D,True
+[D] - Biết đâu nguồn cội - Tuấn Vũ.wav,D,D,True
+[D] - Mùa thu cho em - Như Mai.wav,D,G,False
+[D] - Biển tình - Tố My.wav,D,D,True
+[D] - Mưa chiều kỷ niệm - Bảo Yến.wav,D,G,False
+[D] - Thao thức vì em - Hạ Vy.wav,D,G,False
+[D] - Mùa thu cho em - Phi Khanh.wav,D,D,True
+[D] - Thành phố sương - Đình Nguyên.wav,D,D,True
+[D] - Lâu đài tình ái - Elvis Phương.wav,D,D,True
+[D] - Ai đưa em về - Hương Lan.wav,D,D,True
+[D] - Lâu đài tình ái - Duy Quang.wav,D,D,True
+[D] - Phút cuối - Sơn Tuyền.wav,D,B,False
+[D] - Lệ đá - Ngọc Lan.wav,D,D,True
+[D] - Mưa chiều kỷ niệm - Khánh Ly.wav,D,G,False
+[D] - Lệ đá - Bằng Kiều.wav,D,D,True
+[G:min] - Tuổi đá buồn - Bảo Yến.wav,G:min,G,True
+[C#:min] - Tình đơn phương - Hạ Vy.wav,C#:min,A,False
+[C#:min] - Mưa nửa đêm - Duy Khánh.wav,C#:min,D,True
+[E] - Mưa chiều kỷ niệm - Cẩm Ly.wav,E,D,False
+[E] - Thành phố sương - Hà Anh Tuấn.wav,E,D,False
+[E] - Mùa thu cho em - Ngọc Huệ.wav,E,E,True
+[E] - Lệ đá - Cẩm Ly.wav,E,A,False
+[E] - Mưa Hồng - Khánh Ly.wav,E,D,False
+[E] - Mưa chiều kỷ niệm - Đông Đào.wav,E,A,False
+[E] - Mùa thu cho em - Phương Vy.wav,E,D,False
+[E] - Lệ đá - Lệ Thu.wav,E,E,True
+[E] - Biển tình - Dương Đình Trí.wav,E,D,False
+[E] - Mưa chiều kỷ niệm - Hương Lan.wav,E,D,False
+[E] - Lệ đá - Hương Lan.wav,E,D,False
+[B] - Biển tình - Hương Lan.wav,B,D,False
+[B] - Thao thức vì em - Ngọc Lan.wav,B,B,True
+[B] - Mưa hồng - Elvis Phương.wav,B,D,False
+[B] - Mưa chiều kỷ niệm - Đàm Vĩnh Hưng.wav,B,D,False
+[E:min] - Diễm xưa - Don Hồ.wav,E:min,G,False
+[E:min] - Tuổi đá buồn - Elvis Phương.wav,E:min,D,False
+[E:min] - Dấu tình sầu - Giang Hồng Ngọc.wav,E:min,G,False
+[E:min] - Dấu tình sầu - Ngọc Lan.wav,E:min,G,False
+[E:min] - Dấu tình sầu - Lệ Quyên.wav,E:min,D,False
+[E:min] - Tuổi đá buồn - Quang Dũng.wav,E:min,D,False
+[E:min] - Dấu tình sầu - Hương Lan.wav,E:min,G,False
+[D:min] - Dấu tình sầu - Quỳnh Lan.wav,D:min,F,False
+[D:min] - Dấu tình sầu - Khánh Ly.wav,D:min,G,False
+[D:min] - Dấu tình sầu - Kiều Nga.wav,D:min,G,False
