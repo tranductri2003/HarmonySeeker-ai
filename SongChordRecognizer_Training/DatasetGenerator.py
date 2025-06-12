@@ -34,6 +34,19 @@ def save_preprocessed_Isophonics(args):
         args.isophonics_annotations_directory,
         sample_rate=args.sample_rate,
     )
+
+    print("=== Parameters used for preprocessing ===")
+    print("Sample Rate:", args.sample_rate)
+    print("Hop Length:", args.hop_length)
+    print("Window Size:", args.window_size)
+    print("Flattened:", args.flattened_window)
+    print("Norm to C:", args.norm_to_C)
+    print("Feature Type:", args.feature_type)
+    print("To Skip:", args.to_skip)
+    print("Skip Coef:", args.skip_coef)
+    print("Destination:", args.isophonics_prep_dest)
+    print("=========================================")
+
     # data = IsophonicsDataset.load_dataset("./SongChordRecognizer_Training/SavedDatasets/Isophonics_22050.ds")
     # data.save_segmentation_samples(dest="./SongChordRecognizer_Training/Segmentations/Isophonics50.seg",hop_length=args.hop_length, norm_to_C=args.norm_to_C, spectrogram_generator=spectrogram, n_frames=args.n_frames)
     # data.save_preprocessed_dataset(dest=args.isophonics_prep_dest, hop_length=args.hop_length, norm_to_C=args.norm_to_C, spectrogram_generator=spectrogram, n_frames=args.n_frames)
@@ -153,10 +166,23 @@ parser.add_argument(
     type=int,
     help="Spectrograms on left, and also spectrogram on right of the time bin -> window_size*2 + 1 spectrograms grouped together.",
 )
+
+
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
 parser.add_argument(
     "--flattened_window",
     default=True,
-    type=bool,
+    type=str2bool,
     help="Whether the spectrogram window should be flatten to one array or it sould be array of spectrograms.",
 )
 parser.add_argument(
@@ -168,7 +194,7 @@ parser.add_argument(
 parser.add_argument(
     "--norm_to_C",
     default=False,
-    type=bool,
+    type=str2bool,
     help="Whether we want to transpose all songs to C key (or D dorian, .. A minor, ...)",
 )
 parser.add_argument(
