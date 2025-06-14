@@ -3,6 +3,11 @@ import tempfile
 import soundfile as sf
 import io
 import warnings
+import boto3
+from botocore.config import Config
+import time
+from datetime import datetime
+
 
 import numpy as np
 import librosa
@@ -39,6 +44,10 @@ load_dotenv()
 CRNN_MODEL_PATH = os.getenv("CRNN_MODEL_PATH")
 CRNN_SCALER_PATH = os.getenv("CRNN_SCALER_PATH")
 VOICE_MODEL_PATH = os.getenv("VOICE_MODEL_PATH")
+S3_BUCKET = os.getenv("S3_BUCKET")
+S3_REGION = os.getenv("S3_REGION", "ap-southeast-1")
+AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
+AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
 
 # Constants
 SAMPLE_RATE = int(os.getenv("SAMPLE_RATE"))
@@ -55,6 +64,15 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+s3_client = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS_SECRET_KEY,
+    region_name=S3_REGION,
+    endpoint_url=f"https://s3.{S3_REGION}.amazonaws.com",
+    config=Config(signature_version="s3v4", s3={"addressing_style": "virtual"}),
 )
 
 
@@ -149,7 +167,7 @@ async def predict_chord(file: UploadFile = File(...)):
 @app.post("/ai/separate-voice")
 async def voice_removal(file: UploadFile = File(...)):
     """
-    Process voice separation on an audio file.
+    Process voice separation on an audio file, upload vocals/music to S3, return presigned URLs.
     """
     try:
         if not file.filename:
@@ -158,16 +176,42 @@ async def voice_removal(file: UploadFile = File(...)):
         # Process the audio
         file_bytes = await file.read()
         audio, sr = sf.read(io.BytesIO(file_bytes))
-        result = separate_audio(audio, sr, model_path=VOICE_MODEL_PATH)
+        vocals_buffer, music_buffer = separate_audio(
+            audio, sr, model_path=VOICE_MODEL_PATH
+        )
 
-        # Check if separation was successful
-        if result is None:
-            raise HTTPException(status_code=500, detail="Voice separation failed")
+        # Set timestamped filenames
+        now_str = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+        vocals_key = f"vocals_{now_str}.wav"
+        music_key = f"music_{now_str}.wav"
 
-        return StreamingResponse(
-            content=result,
-            media_type="application/zip",
-            headers={"Content-Disposition": "attachment; filename=separated_audio.zip"},
+        # Upload to S3
+        s3_client.upload_fileobj(
+            vocals_buffer, S3_BUCKET, vocals_key, ExtraArgs={"ContentType": "audio/wav"}
+        )
+        s3_client.upload_fileobj(
+            music_buffer, S3_BUCKET, music_key, ExtraArgs={"ContentType": "audio/wav"}
+        )
+
+        # Generate presigned URLs
+        expiration = 3600  # 1 hour
+        vocals_url = s3_client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": S3_BUCKET, "Key": vocals_key},
+            ExpiresIn=expiration,
+        )
+        music_url = s3_client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": S3_BUCKET, "Key": music_key},
+            ExpiresIn=expiration,
+        )
+
+        return JSONResponse(
+            content={
+                "vocals_url": vocals_url,
+                "music_url": music_url,
+                "expiration": expiration,
+            }
         )
 
     except Exception as e:

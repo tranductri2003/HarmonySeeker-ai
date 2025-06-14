@@ -95,21 +95,14 @@ def separate_audio(audio, sr, model_path=MODEL_PATH):
     separated_music = normalize_audio(separated_music)
     processed_original = normalize_audio(processed_original)
 
-    # Write to BytesIO instead of files
+    # Write to BytesIO and return buffers (not zip)
     vocals_buffer = io.BytesIO()
     music_buffer = io.BytesIO()
-
     sf.write(vocals_buffer, separated_vocals, TARGET_SAMPLE_RATE, format="WAV")
     sf.write(music_buffer, separated_music, TARGET_SAMPLE_RATE, format="WAV")
-
     vocals_buffer.seek(0)
     music_buffer.seek(0)
-    print(vocals_buffer, music_buffer)
-    zip_buffer = create_zip_from_buffers(
-        {"vocals": vocals_buffer, "music": music_buffer}
-    )
-    print(zip_buffer)
-    return zip_buffer
+    return vocals_buffer, music_buffer
 
 
 def separate_vocals(input_path, output_path, model_path=MODEL_PATH):
@@ -120,13 +113,3 @@ def separate_vocals(input_path, output_path, model_path=MODEL_PATH):
         input_path, vocals_output_path=output_path, model_path=model_path
     )
     return results["vocals"] if results else None
-
-
-def create_zip_from_buffers(buffers_dict):
-    zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, "w") as zipf:
-        for name, buf in buffers_dict.items():
-            buf.seek(0)
-            zipf.writestr(f"{name}.wav", buf.read())
-    zip_buffer.seek(0)
-    return zip_buffer
