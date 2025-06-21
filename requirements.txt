@@ -16,3 +16,4 @@ sounddevice
 scipy
 essentia
 boto3
+requests
