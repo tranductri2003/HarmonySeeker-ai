@@ -1,68 +1,49 @@
 import json
 import urllib.request
 import os
+import base64
+import gzip
+import io
 
 WEBHOOK_URL = os.getenv("GOOGLE_CHAT_WEBHOOK")
 
 
 def lambda_handler(event, context):
-    for record in event.get("records", []):
-        message = record.get("message", "")
+    print("📦 RAW EVENT:")
+    print(json.dumps(event))
 
-        # Skip empty or system messages
-        if not message.strip():
-            continue
+    compressed_payload = base64.b64decode(event["awslogs"]["data"])
+    uncompressed_payload = gzip.GzipFile(fileobj=io.BytesIO(compressed_payload)).read()
+    payload = json.loads(uncompressed_payload)
 
-        level = get_log_level(message)
-        card_payload = build_google_chat_card(message, level)
-        send_to_google_chat(card_payload)
+    print("📝 PARSED LOG EVENTS:")
+    print(json.dumps(payload))
+
+    for log_event in payload["logEvents"]:
+        message = log_event.get("message", "")
+        print(f"🔍 Log message: {message}")
+
+        if any(
+            level in message
+            for level in ["ERROR", "INFO", "DEBUG", "WARNING", "TRACEBACK"]
+        ):
+            send_to_google_chat(message)
 
     return {"status": "ok"}
 
 
-def get_log_level(message: str) -> str:
-    """Detect log level from the log line"""
-    levels = ["ERROR", "WARNING", "INFO", "DEBUG", "TRACEBACK"]
-    for lvl in levels:
-        if lvl in message.upper():
-            return lvl
-    return "INFO"
-
-
-def build_google_chat_card(message: str, level: str):
-    """Constructs a Google Chat card payload based on log level"""
-    color_map = {
-        "ERROR": "#D93025",
-        "WARNING": "#F9AB00",
-        "INFO": "#1A73E8",
-        "DEBUG": "#34A853",
-        "TRACEBACK": "#D93025",
-    }
-    emoji_map = {
-        "ERROR": "🚨",
-        "WARNING": "⚠️",
-        "INFO": "ℹ️",
-        "DEBUG": "🐛",
-        "TRACEBACK": "💥",
-    }
-
-    header_text = f"{emoji_map.get(level, '📘')} HARMONY SEEKER [{level}]"
-
-    return {
+def send_to_google_chat(message):
+    headers = {"Content-Type": "application/json"}
+    data = {
         "cards": [
             {
-                "header": {
-                    "title": header_text,
-                    "subtitle": "From CloudWatch Lambda Log Forwarder",
-                    "imageUrl": "https://cdn-icons-png.flaticon.com/512/3306/3306623.png",
-                    "imageStyle": "AVATAR",
-                },
+                "header": {"title": "🎯 HarmonySeeker Log"},
                 "sections": [
                     {
                         "widgets": [
                             {
                                 "textParagraph": {
-                                    "text": f"<b>Log Message:</b><br><pre>{message.strip()}</pre>"
+                                    "text": f"<b>Log Message:</b><br><pre>{message}</pre>"
                                 }
                             }
                         ]
@@ -72,10 +53,8 @@ def build_google_chat_card(message: str, level: str):
         ]
     }
 
-
-def send_to_google_chat(payload: dict):
-    """Send card to Google Chat"""
-    headers = {"Content-Type": "application/json"}
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(WEBHOOK_URL, data=data, headers=headers)
-    urllib.request.urlopen(req)
+    req = urllib.request.Request(
+        WEBHOOK_URL, data=json.dumps(data).encode("utf-8"), headers=headers
+    )
+    with urllib.request.urlopen(req) as resp:
+        print(f"✅ Google Chat response: {resp.status}")
