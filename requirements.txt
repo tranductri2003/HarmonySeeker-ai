@@ -17,3 +17,5 @@ scipy
 essentia
 boto3
 requests
+psutil
+dotenv
