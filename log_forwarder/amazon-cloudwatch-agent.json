@@ -1,0 +1,23 @@
+{
+    "logs": {
+      "logs_collected": {
+        "files": {
+          "collect_list": [
+            {
+              "file_path": "/home/ubuntu/HarmonySeeker-ai/app.log",
+              "log_group_name": "/harmony-seeker/application",
+              "log_stream_name": "{instance_id}-app-log",
+              "timestamp_format": "%Y-%m-%d %H:%M:%S",
+              "multi_line_start_pattern": "^{\\d{4}-\\d{2}-\\d{2}",
+              "timezone": "Local"
+            }
+          ]
+        }
+      },
+      "log_stream_name": "default-stream"
+    },
+    "agent": {
+      "run_as_user": "root"
+    }
+  }
+  
