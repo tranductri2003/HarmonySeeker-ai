@@ -40,6 +40,15 @@ from SongChordRecognizer_Training.Models import CRNN_basic_WithStandardScaler
 from SongChordRecognizer_Training.Spectrograms import cqt_spectrogram
 from SongChordRecognizer_Pipeline.KeyRecognizer import KeyRecognizer
 from VoiceSeparator_Pipeline.inferrence import separate_audio
+from VoiceSeparator_Pipeline.model import (
+    TimeFrequencyTransformBlock,
+    TimeDistributedDenseBlock,
+    TimeFrequencyConvolution,
+    Downscale,
+    Upscale,
+)
+from VoiceSeparator_Pipeline.metric import spectral_loss, sdr
+from keras import saving
 
 # Import Essentia for scale detection
 from essentia.standard import KeyExtractor
@@ -62,8 +71,41 @@ N_FRAMES = int(os.getenv("N_FRAMES"))
 # Setup logger
 logger = setup_logger()
 
+# Global model variables
+global_crnn_model = None
+global_voice_model = None
+
 # Initialize FastAPI app
 app = FastAPI()
+
+# Load AI models at startup
+logger.info("Loading AI models...")
+try:
+    # Load CRNN model for chord recognition
+    global_crnn_model = CRNN_basic_WithStandardScaler()
+    global_crnn_model.load(CRNN_MODEL_PATH, CRNN_SCALER_PATH)
+    logger.info("CRNN model loaded successfully")
+
+    # Register custom objects for voice separation model
+    custom_objects = {
+        "TimeFrequencyTransformBlock": TimeFrequencyTransformBlock,
+        "TimeDistributedDenseBlock": TimeDistributedDenseBlock,
+        "TimeFrequencyConvolution": TimeFrequencyConvolution,
+        "Downscale": Downscale,
+        "Upscale": Upscale,
+        "spectral_loss": spectral_loss,
+        "sdr": sdr,
+    }
+
+    # Load voice separation model
+    global_voice_model = saving.load_model(
+        VOICE_MODEL_PATH, custom_objects=custom_objects
+    )
+    logger.info("Voice separation model loaded successfully")
+except Exception as e:
+    log_exception(logger, f"Failed to load AI models: {str(e)}")
+    global_crnn_model = None
+    global_voice_model = None
 
 # Enable CORS
 app.add_middleware(
@@ -152,7 +194,13 @@ async def health():
     Health check endpoint that returns system information
     """
     system_info = get_system_info()
-    return JSONResponse(content={"status": "ok", "system": system_info})
+    model_status = {
+        "crnn_model_loaded": global_crnn_model is not None,
+        "voice_model_loaded": global_voice_model is not None,
+    }
+    return JSONResponse(
+        content={"status": "ok", "system": system_info, "models": model_status}
+    )
 
 
 @app.post("/ai/predict-chord")
@@ -169,6 +217,12 @@ async def predict_chord(request: Request, file: UploadFile = File(...)):
     )
 
     try:
+        # Check if model is loaded
+        if global_crnn_model is None:
+            raise Exception(
+                "Chord recognition model not loaded properly during startup"
+            )
+
         # Save the uploaded file temporarily
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
             tmp.write(await file.read())
@@ -180,9 +234,8 @@ async def predict_chord(request: Request, file: UploadFile = File(...)):
         # 1. Get scale from Essentia
         scale = estimate_scale_with_essentia(y, sr)
 
-        # Load model and scaler
-        model = CRNN_basic_WithStandardScaler()
-        model.load(CRNN_MODEL_PATH, CRNN_SCALER_PATH)
+        # Use the global model instead of loading it again
+        model = global_crnn_model
 
         # Preprocess the audio for prediction
         x = DataPreprocessor.sequence_preprocess(
@@ -243,12 +296,17 @@ async def voice_removal(file: UploadFile = File(...)):
         if not file.filename:
             raise HTTPException(status_code=400, detail="No file provided")
 
+        # Check if model is loaded
+        if global_voice_model is None:
+            raise Exception("Voice separation model not loaded properly during startup")
+
         # Process the audio
         file_bytes = await file.read()
         audio, sr = sf.read(io.BytesIO(file_bytes))
 
+        # Use the global voice model for separation
         vocals_buffer, music_buffer = separate_audio(
-            audio, sr, model_path=VOICE_MODEL_PATH
+            audio, sr, model=global_voice_model
         )
 
         # Set timestamped filenames
