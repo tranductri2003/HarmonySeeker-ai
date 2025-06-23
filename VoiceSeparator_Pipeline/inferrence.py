@@ -15,27 +15,43 @@ load_dotenv()
 MODEL_PATH = os.getenv("VOICE_MODEL_PATH")
 
 
-def separate_audio(audio, sr, model_path=MODEL_PATH):
-    print(f"Loading model from: {model_path}")
+def separate_audio(audio, sr, model=None, model_path=MODEL_PATH):
+    """
+    Separate vocals from music in audio.
 
-    # Load the trained model with custom objects
-    try:
-        # Register custom objects before loading
-        custom_objects = {
-            "TimeFrequencyTransformBlock": TimeFrequencyTransformBlock,
-            "TimeDistributedDenseBlock": TimeDistributedDenseBlock,
-            "TimeFrequencyConvolution": TimeFrequencyConvolution,
-            "Downscale": Downscale,
-            "Upscale": Upscale,
-            "spectral_loss": spectral_loss,
-            "sdr": sdr,
-        }
+    Args:
+        audio: Audio data
+        sr: Sample rate
+        model: Pre-loaded model (if provided, model_path is ignored)
+        model_path: Path to model file (used only if model is None)
 
-        model = saving.load_model(model_path, custom_objects=custom_objects)
-        print("Model loaded successfully!")
-    except Exception as e:
-        print(f"Error loading model: {e}")
-        return None
+    Returns:
+        Tuple of (vocals_buffer, music_buffer)
+    """
+    # Use provided model or load from path
+    if model is None:
+        print(f"Loading model from: {model_path}")
+
+        # Load the trained model with custom objects
+        try:
+            # Register custom objects before loading
+            custom_objects = {
+                "TimeFrequencyTransformBlock": TimeFrequencyTransformBlock,
+                "TimeDistributedDenseBlock": TimeDistributedDenseBlock,
+                "TimeFrequencyConvolution": TimeFrequencyConvolution,
+                "Downscale": Downscale,
+                "Upscale": Upscale,
+                "spectral_loss": spectral_loss,
+                "sdr": sdr,
+            }
+
+            model = saving.load_model(model_path, custom_objects=custom_objects)
+            print("Model loaded successfully!")
+        except Exception as e:
+            print(f"Error loading model: {e}")
+            return None
+    else:
+        print("Using provided pre-loaded model")
 
     # Load and preprocess audio
     try:
@@ -105,11 +121,29 @@ def separate_audio(audio, sr, model_path=MODEL_PATH):
     return vocals_buffer, music_buffer
 
 
-def separate_vocals(input_path, output_path, model_path=MODEL_PATH):
+def separate_vocals(input_path, output_path, model=None, model_path=MODEL_PATH):
     """
     Backward compatibility function - separates only vocals.
+
+    Args:
+        input_path: Path to input audio file
+        output_path: Path to output vocals file
+        model: Pre-loaded model (if provided, model_path is ignored)
+        model_path: Path to model file (used only if model is None)
     """
-    results = separate_audio(
-        input_path, vocals_output_path=output_path, model_path=model_path
-    )
-    return results["vocals"] if results else None
+    # Load audio from file
+    try:
+        audio, sr = sf.read(input_path, dtype="float32")
+    except Exception as e:
+        print(f"Error loading audio file: {e}")
+        return None
+
+    # Process audio
+    vocals_buffer, _ = separate_audio(audio, sr, model=model, model_path=model_path)
+
+    if vocals_buffer:
+        # Write vocals to output file
+        with open(output_path, "wb") as f:
+            f.write(vocals_buffer.getbuffer())
+        return output_path
+    return None
